@@ -1,46 +1,73 @@
+# ClockMod (MC 1.19.2) [![](https://jitpack.io/v/Frankopop/ClockMod.svg)](https://jitpack.io/#Frankopop/ClockMod)
 
-Source installation information for modders
--------------------------------------------
-This code follows the Minecraft Forge installation methodology. It will apply
-some small patches to the vanilla MCP source code, giving you and it access 
-to some of the data and functions you need to build a successful mod.
+**License:** MIT  
 
-Note also that the patches are built against "un-renamed" MCP source code (aka
-SRG Names) - this means that you will not be able to read them directly against
-normal code.
+---
 
-Setup Process:
-==============================
+## Overview
 
-Step 1: Open your command-line and browse to the folder where you extracted the zip file.
+ClockMod adds a dynamic in-game clock overlay synchronized with the server.  
+The mod allows players to see the current time directly on their screen without needing additional items or GUIs.
 
-Step 2: You're left with a choice.
-If you prefer to use Eclipse:
-1. Run the following command: `./gradlew genEclipseRuns`
-2. Open Eclipse, Import > Existing Gradle Project > Select Folder 
-   or run `gradlew eclipse` to generate the project.
+By default, the mod displays a simple, clean clock overlay. The clock is updated in real-time according to the server's in-game time, making it perfect for multiplayer servers or solo worlds where knowing the precise time is useful.
 
-If you prefer to use IntelliJ:
-1. Open IDEA, and import project.
-2. Select your build.gradle file and have it import.
-3. Run the following command: `./gradlew genIntellijRuns`
-4. Refresh the Gradle Project in IDEA if required.
+---
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can 
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+## Features
 
-Mapping Names:
-=============================
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license, if you do not agree with it you can change your mapping names to other crowdsourced names in your 
-build.gradle. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
+- ⏱ **Real-time server synchronization**: The clock reflects the server time accurately.  
+- 🎛 **Customizable overlay**: Easily tweak position, size, and visibility of the clock.  
+- ⚡ **Lightweight**: Minimal impact on performance.  
+- 🔧 **Easy integration**: Works out-of-the-box on any Forge 1.19.2 setup.  
 
-Additional Resources: 
-=========================
-Community Documentation: https://docs.minecraftforge.net/en/1.19.2/gettingstarted/
-LexManos' Install Video: https://youtu.be/8VEdtQLuLO0
-Forge Forums: https://forums.minecraftforge.net/
-Forge Discord: https://discord.minecraftforge.net/
+---
+
+## Adding ClockMod to Your Project
+
+Add **JitPack** to your `build.gradle` repositories:
+
+```gradle
+repositories {
+    maven { url "https://jitpack.io" }
+}
+Add ClockMod as a dependency:
+
+gradle
+Copia codice
+dependencies {
+    implementation 'com.github.Frankopop:ClockMod:1.0-1.19.2'
+}
+Replace 1.0-1.19.2 with the tag/version you want to use if different.
+
+Usage
+Once installed, the clock appears on your HUD automatically when joining a server or starting a single-player world.
+No additional configuration is required for default behavior.
+
+Development Setup
+If you want to develop or contribute to ClockMod:
+
+Clone the repository:
+
+bash
+Copia codice
+git clone https://github.com/Frankopop/ClockMod.git
+cd ClockMod
+Add run configuration properties to your Gradle build.gradle client and server blocks:
+
+gradle
+Copia codice
+property 'mixin.env.remapRefMap', 'true'
+property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+Regenerate IDE run configurations:
+
+bash
+Copia codice
+./gradlew genIntellijRuns   # For IntelliJ IDEA
+./gradlew genEclipseRuns    # For Eclipse
+./gradlew genVSCodeRuns     # For VSCode
+Release Notes
+1.0-1.19.2 – First public release
+
+Dynamic clock overlay synchronized with server time.
+
+Lightweight and ready for Forge 1.19.2.
