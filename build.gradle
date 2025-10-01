@@ -1,0 +1,98 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+version = '1.0-1.19.2'
+group = 'com.github.frankopop'
+archivesBaseName = 'ClockMod'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+minecraft {
+
+    mappings channel: 'official', version: '1.19.2'
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'forge.enabledGameTestNamespaces', 'clockmod'
+
+            mods {
+                'clockmod'{ source sourceSets.main }
+            }
+        }
+        client {
+            property 'forge.enabledGameTestNamespaces', 'clockmod'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/crateSrgToMcp/output.srg"
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', 'clockmod'
+            args '--nogui'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/crateSrgToMcp/output.srg"
+        }
+
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', 'clockmod'
+        }
+
+        data {
+            workingDirectory project.file('run-data')
+            args '--mod', 'clockmod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.theillusive4.top/' }
+}
+
+dependencies {
+        minecraft "net.minecraftforge:forge:1.19.2-43.4.13"
+
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version:'1.19.2', minecraft_version_range: '[1.19.2,)',
+            forge_version: '43.4.13', forge_version_range: '[43,)',
+            'mod_id': 'clockmod', mod_name: 'ClockMod', mod_license: 'MIT',
+            mod_version: '1.0-1.19.2', mod_authors: 'franko',
+            mod_description: 'Mostra a schermo l\'orologio sincronizzato ricevuto dal server.',
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            groupId = 'com.github.francopop'
+            artifactId = 'ClockMod'
+            version = project.version
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+}
