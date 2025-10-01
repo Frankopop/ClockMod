@@ -31,15 +31,11 @@ minecraft {
         }
         client {
             property 'forge.enabledGameTestNamespaces', 'clockmod'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${buildDir}/crateSrgToMcp/output.srg"
         }
 
         server {
             property 'forge.enabledGameTestNamespaces', 'clockmod'
             args '--nogui'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${buildDir}/crateSrgToMcp/output.srg"
         }
 
         gameTestServer {
