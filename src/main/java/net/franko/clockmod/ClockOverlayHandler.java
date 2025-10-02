@@ -48,8 +48,8 @@ public class ClockOverlayHandler {
             days --;
         }
 
-        String formatted = String.format("%02d:%02d - %s - %02d/%02d/&04d",
-                hour,month, weekday, day, month, year);
+        String formatted = String.format("%02d:%02d - %s - %02d/%02d/%04d",
+                hour,minute, weekday, day, month, year);
 
         for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
             ModMessages.CHANNEL.sendTo(new ClockPacket(formatted),
