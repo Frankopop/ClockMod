@@ -1,20 +1,22 @@
 plugins {
     id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'eclipse'
     id 'idea'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'com.modrinth.minotaur' version '2.3.1'
 }
 
+group = 'io.github.frankopop'
 version = '1.0-1.19.2'
-group = 'com.github.frankopop'
-archivesBaseName = 'ClockMod'
+base {
+    archivesName = 'clockmod'
+}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
+println "Java: ${System.getProperty('java.version')}, JVM: ${System.getProperty('java.vm.version')} (${System.getProperty('java.vendor')}), Arch: ${System.getProperty('os.arch')}"
 
+minecraft {
     mappings channel: 'official', version: '1.19.2'
     copyIdeResources = true
 
@@ -26,16 +28,21 @@ minecraft {
             property 'forge.enabledGameTestNamespaces', 'clockmod'
 
             mods {
-                'clockmod'{ source sourceSets.main }
+                "clockmod" { source sourceSets.main }
             }
         }
+
         client {
             property 'forge.enabledGameTestNamespaces', 'clockmod'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
         }
 
         server {
             property 'forge.enabledGameTestNamespaces', 'clockmod'
             args '--nogui'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
         }
 
         gameTestServer {
@@ -53,42 +60,67 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenCentral()
-    maven { url = 'https://maven.theillusive4.top/' }
+    maven { url = 'https://maven.theillusivec4.top/' }
 }
 
 dependencies {
-        minecraft "net.minecraftforge:forge:1.19.2-43.4.13"
-
+    minecraft "net.minecraftforge:forge:1.19.2-43.4.13"
 }
 
 tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version:'1.19.2', minecraft_version_range: '[1.19.2,)',
-            forge_version: '43.4.13', forge_version_range: '[43,)',
-            'mod_id': 'clockmod', mod_name: 'ClockMod', mod_license: 'MIT',
+    def replaceProperties = [
+            minecraft_version: '1.19.2', minecraft_version_range: ' [1.19.2,)',
+            forge_version: '43.4.13', forge_version_range: ' [43,)',
+            loader_version_range: '[43,)',
+            mod_id: 'clockmod', mod_name: 'ClockMod', mod_license: 'MIT',
             mod_version: '1.0-1.19.2', mod_authors: 'franko',
-            mod_description: 'Mostra a schermo l\'orologio sincronizzato ricevuto dal server.',
+            mod_description: 'Mostra a schermo l\'orologio sincronizzato ricevuto dal server.'
     ]
     inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) { expand replaceProperties + [project: project] }
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-            groupId = 'com.github.francopop'
-            artifactId = 'ClockMod'
-            version = project.version
-        }
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes(
+                'Specification-Title': 'clockmod',
+                'Specification-Vendor': 'franko',
+                'Specification-Version': '1',
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.jar.archiveVersion,
+                'Implementation-Vendor': 'franko',
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        )
     }
+
+    finalizedBy 'reobfJar'
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar) {
+    archiveClassifier.set('javadoc')
+    from tasks.javadoc
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+modrinth {
+    token = project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN")
+    projectId = "iy53vZk7"
+    versionNumber = project.version
+    changelog = "Prima versione pubblicata."
+    gameVersions = ["1.19.2"]
+    loaders = ["forge"]
+    uploadFile = tasks.named("jar")
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-
 }
