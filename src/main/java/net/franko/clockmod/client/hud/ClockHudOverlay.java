@@ -13,15 +13,13 @@ public class ClockHudOverlay {
 
     public static String latestText = "";
 
-    // <<< static boolean dichiarata qui, a livello di classe
     private static boolean hudVisible = true;
-
     private static final int X_OFFSET_PIXELS = 10;
     private static final int Y_OFFSET_PIXELS = 10;
     private static final int COLOR = 0xFFFFAA;
     private static final float SCALE = 1.0f;
 
-    // metodi pubblici static per controllare l'HUD
+
     public static void setHudVisible(boolean visible) {
         hudVisible = visible;
     }
