@@ -8,18 +8,31 @@ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = net.franko.clockmod.ClockMod.MOD_ID,value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = net.franko.clockmod.ClockMod.MOD_ID, value = Dist.CLIENT)
 public class ClockHudOverlay {
 
-    public static  String latestText = "";
+    public static String latestText = "";
+
+    // <<< static boolean dichiarata qui, a livello di classe
+    private static boolean hudVisible = true;
 
     private static final int X_OFFSET_PIXELS = 10;
     private static final int Y_OFFSET_PIXELS = 10;
     private static final int COLOR = 0xFFFFAA;
     private static final float SCALE = 1.0f;
 
+    // metodi pubblici static per controllare l'HUD
+    public static void setHudVisible(boolean visible) {
+        hudVisible = visible;
+    }
+
+    public static boolean isHudVisible() {
+        return hudVisible;
+    }
+
     @SubscribeEvent
-    public static void  onRenderGuiOverlay(RenderGuiOverlayEvent.Post event) {
+    public static void onRenderGuiOverlay(RenderGuiOverlayEvent.Post event) {
+        if (!hudVisible) return; // <- controllo visibilità
         PoseStack poseStack = event.getPoseStack();
         Minecraft mc = Minecraft.getInstance();
 
